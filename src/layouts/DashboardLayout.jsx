@@ -50,8 +50,9 @@ const DashboardLayout = () => {
               src={'/logo.png'} alt="" />
             <NavLink to={'/'}> <p className="btn btn-ghost text-xl absolute top-1 left-8">DailyMart</p></NavLink>
           </div>
-          <ul className='flex-1'>
+          <ul className='flex-1 flex gap-4'>
             <li><Link to={'/'}>Home</Link></li>
+            <li><Link to={'/blogs'}>Blog</Link></li>
           </ul>
           <div className="">
             <ul className="menu menu-horizontal flex items-center">

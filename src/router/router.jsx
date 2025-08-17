@@ -30,6 +30,7 @@ import About from "../Shared/Footer/About/About";
 import Contact from "../Shared/Footer/Contact/Contact";
 import Terms from "../Shared/Footer/Terms/Terms";
 import Blog from "../pages/Blog/Blog";
+import MyProfile from "../pages/Dashboard/MyProfile/MyProfile";
 
 
 export const router = createBrowserRouter([
@@ -96,6 +97,10 @@ export const router = createBrowserRouter([
             {
                 path: 'myorder',
                 Component: MyOrderList
+            },
+            {
+                path: 'myprofile',
+                Component: MyProfile
             },
             {
                 path: 'payment/:productId',

@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { MdOutlineProductionQuantityLimits } from 'react-icons/md';
 import { BsCardChecklist } from 'react-icons/bs';
+import { CgProfile } from "react-icons/cg";
 import useAuth from '../../hooks/useAuth';
 import UseUserRole from '../../hooks/UseUserRole';
 import Loading from '../Loading/Loading';
@@ -54,7 +55,7 @@ const Sidebar = () => {
               'flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 hover:bg-purple-100 hover:text-purple-700'
               to={'/dashboard'}>
               <FaUsers />
-              Home</NavLink>
+              Overview</NavLink>
           </li>
 
           {!roleLoading && role === 'admin' &&
@@ -174,6 +175,15 @@ const Sidebar = () => {
               </li>
             </>
           }
+
+          <li>
+            <NavLink to="myprofile" className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-md hover:bg-purple-100 hover:text-purple-700 ${isActive ? 'bg-purple-100 text-purple-700 font-semibold' : 'text-gray-700'}`
+            }>
+              <CgProfile />
+              My Profile
+            </NavLink>
+          </li>
 
         </ul>
       </nav>
