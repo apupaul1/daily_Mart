@@ -16,7 +16,7 @@ export default function PopularSales() {
   return (
     <section className="py-16 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Heading */}
+        
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl md:text-3xl font-bold text-gray-900">Popular Sales</h2>
           <Link to={'/discount-product'} className="text-green-600 font-semibold hover:underline">
@@ -24,7 +24,7 @@ export default function PopularSales() {
           </Link>
         </div>
 
-        {/* 3-column grid */}
+        
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {products.map((item) => (
             <div

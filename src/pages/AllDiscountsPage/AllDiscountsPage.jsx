@@ -19,22 +19,22 @@ const AllDiscountsPage = () => {
         return <Loading></Loading>
     }
 
-    // Hardcoded discount (20%)
+    
     const DISCOUNT_PERCENT = 20;
 
     return (
         <div className="bg-gray-50 min-h-screen py-10">
-            {/* Page Header */}
+           
             <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
                 All Discounts
             </h1>
 
-            {/* Product Cards */}
+          
             <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
                 {products.map((product, index) => {
-                    // old price from API
+                    
                     const oldPrice = product.latestPrice || 0;
-                    // apply hardcoded discount
+                    
                     const newPrice = (oldPrice - (oldPrice * DISCOUNT_PERCENT) / 100).toFixed(0);
 
                     return (
@@ -42,14 +42,14 @@ const AllDiscountsPage = () => {
                             key={index}
                             className="bg-white rounded-lg shadow hover:shadow-lg transition duration-300 overflow-hidden"
                         >
-                            {/* Product Image */}
+                            
                             <img
                                 src={product.imageUrl || "https://via.placeholder.com/400x300"}
                                 alt={product.itemName}
                                 className="w-full h-48 object-cover"
                             />
 
-                            {/* Product Details */}
+                            
                             <div className="p-4">
                                 <h2 className="text-xl font-semibold mb-2">
                                     {product.itemName}
