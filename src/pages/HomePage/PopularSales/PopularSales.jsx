@@ -19,7 +19,7 @@ export default function PopularSales() {
         {/* Heading */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl md:text-3xl font-bold text-gray-900">Popular Sales</h2>
-          <Link to={'/allproducts'} className="text-green-600 font-semibold hover:underline">
+          <Link to={'/discount-product'} className="text-green-600 font-semibold hover:underline">
             View All
           </Link>
         </div>

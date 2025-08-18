@@ -31,6 +31,7 @@ import Contact from "../Shared/Footer/Contact/Contact";
 import Terms from "../Shared/Footer/Terms/Terms";
 import Blog from "../pages/Blog/Blog";
 import MyProfile from "../pages/Dashboard/MyProfile/MyProfile";
+import AllDiscountsPage from "../pages/AllDiscountsPage/AllDiscountsPage";
 
 
 export const router = createBrowserRouter([
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
             {
                 path: 'allproducts',
                 Component: AllProducts
+            },
+            {
+                path: 'discount-product',
+                Component: AllDiscountsPage
             },
             {
                 path: 'blogs',

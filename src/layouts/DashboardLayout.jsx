@@ -53,6 +53,7 @@ const DashboardLayout = () => {
           <ul className='flex-1 flex gap-4'>
             <li><Link to={'/'}>Home</Link></li>
             <li><Link to={'/blogs'}>Blog</Link></li>
+            <li><Link to={'/discount-product'}>Discount Items</Link></li>
           </ul>
           <div className="">
             <ul className="menu menu-horizontal flex items-center">
