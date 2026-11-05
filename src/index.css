@@ -1,9 +1,90 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
+/* ---------------------------------------------
+   DailyMart — Modern Premium Design System
+   Forest green + citron + ivory + ink
+---------------------------------------------- */
 
-.fira-sans-regular {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+@plugin "daisyui" {
+  themes: dailymart --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "dailymart";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #fbfaf6; /* ivory */
+  --color-base-200: #f3f1e8; /* warm sand */
+  --color-base-300: #e6e3d6; /* muted stone */
+  --color-base-content: #12231c; /* ink */
+
+  --color-primary: #0b3d2e; /* deep forest */
+  --color-primary-content: #fbfaf6;
+  --color-secondary: #d9e45f; /* citron (from logo) */
+  --color-secondary-content: #1b2410;
+  --color-accent: #b8863b; /* brushed brass */
+  --color-accent-content: #fff8ec;
+  --color-neutral: #0c1f18;
+  --color-neutral-content: #f4f1e7;
+
+  --color-info: #2563a8;
+  --color-info-content: #f4f8ff;
+  --color-success: #1e7a57;
+  --color-success-content: #f2fbf7;
+  --color-warning: #b7791f;
+  --color-warning-content: #fffaf0;
+  --color-error: #b42318;
+  --color-error-content: #fff5f4;
+
+  --radius-selector: 9999px;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans: "Josefin Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
+  --color-ink: #12231c;
+  --color-ink-soft: #55655e;
+  --color-cream: #fbfaf6;
+  --color-forest: #0b3d2e;
+  --color-forest-soft: #12513d;
+  --color-citron: #d9e45f;
+
+  --shadow-soft: 0 24px 60px -32px rgb(11 61 46 / 0.35);
+  --shadow-card: 0 18px 40px -28px rgb(11 61 46 / 0.45);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-citron);
+    color: var(--color-forest);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-forest);
+    outline-offset: 2px;
+  }
 }

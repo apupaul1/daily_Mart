@@ -66,7 +66,7 @@ const AdvertisementForm = () => {
   };
 
   return (
-    <div className=" p-9 bg-white shadow rounded-lg">
+    <div className=" p-9 bg-white rounded-lg">
       <h2 className="text-3xl font-bold mb-12 text-center">Submit Advertisement</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 

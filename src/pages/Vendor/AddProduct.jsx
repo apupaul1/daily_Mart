@@ -18,7 +18,6 @@ const AddProduct = () => {
 
   const { user } = useAuth()
 
-  // console.log(user.email);
 
   const axiosSecure = useAxiosSecure();
 
@@ -30,7 +29,6 @@ const AddProduct = () => {
   const onSubmit = async (data) => {
 
     axiosSecure.post('/products', data).then(res => {
-      console.log(res.data);
       if (res.data.insertedId) {
         toast.success("Product Added successfully!");
         reset();
@@ -62,7 +60,7 @@ const AddProduct = () => {
   const inputFocusClasses = "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150";
 
   return (
-    <div className=" p-4 sm:p-6 bg-white rounded-lg shadow-md">
+    <div className=" p-4 sm:p-6 bg-white rounded-lg ">
       <h2 className="text-2xl md:text-4xl font-bold mb-6 text-center">Add Product</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 

@@ -18,10 +18,6 @@ const Sidebar = () => {
   const { role, roleLoading } = UseUserRole();
 
 
-  if (roleLoading) {
-    return <Loading></Loading>
-  }
-
   return (
     <div className="p-4 flex flex-col min-h-screen h-full overflow-y-auto">
       {/* Logo */}

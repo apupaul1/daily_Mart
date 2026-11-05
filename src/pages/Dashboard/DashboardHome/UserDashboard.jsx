@@ -1,29 +1,41 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { FaShoppingCart, FaEye, FaChartLine } from 'react-icons/fa';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import useAuth from '../../../hooks/useAuth';
-import Loading from '../../../Shared/Loading/Loading';
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import { FaShoppingCart, FaEye, FaChartLine } from "react-icons/fa";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../hooks/useAuth";
+import Loading from "../../../Shared/Loading/Loading";
 
 const UserDashboard = () => {
   const { user, loading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const { data,  error } = useQuery({
-    queryKey: ['userDashboard', user?.email],
+  const { data, error } = useQuery({
+    queryKey: ["userDashboard", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/dashboard/user/${user.email}`);
       return res.data;
     },
   });
 
-    if (loading || !data) {
+  if (loading || !data) {
     return <Loading />;
   }
 
-  
-  if (error) return <p className="text-red-500 text-center text-lg mt-10">Error loading data</p>;
+  if (error)
+    return (
+      <p className="text-red-500 text-center text-lg mt-10">
+        Error loading data
+      </p>
+    );
 
   const { recentOrders, watchlist } = data;
 
@@ -32,13 +44,15 @@ const UserDashboard = () => {
     price: order.price,
   }));
 
-  if (loading){
-    return <Loading></Loading>
+  if (loading) {
+    return <Loading></Loading>;
   }
 
   return (
     <div className="p-6 rounded-2xl lg:p-12 bg-gradient-to-r from-purple-50 via-white to-indigo-50 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-10 text-purple-700">Welcome, {user.displayName}!</h1>
+      <h1 className="text-4xl font-bold text-center mb-10 text-purple-700">
+        Welcome, {user.displayName}!
+      </h1>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Recent Orders */}
@@ -50,7 +64,8 @@ const UserDashboard = () => {
             <ul className="space-y-2">
               {recentOrders.map((order, idx) => (
                 <li key={idx} className="bg-purple-100 rounded p-3">
-                  <strong>{order.productName}</strong> — {order.quantity} pcs — ৳{order.totalAmount.toFixed(2)}
+                  <strong>{order.productName}</strong> — {order.quantity} pcs —
+                  ৳{order.totalAmount.toFixed(2)}
                 </li>
               ))}
             </ul>
@@ -68,7 +83,8 @@ const UserDashboard = () => {
             <ul className="space-y-2">
               {watchlist.map((item, idx) => (
                 <li key={idx} className="bg-indigo-100 rounded p-3">
-                  <strong>{item.productName}</strong> — Current Price: ৳{item.currentPrice}
+                  <strong>{item.productName}</strong> — Current Price: ৳
+                  {item.currentPrice}
                 </li>
               ))}
             </ul>
@@ -90,7 +106,13 @@ const UserDashboard = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="price" stroke="#ec4899" strokeWidth={3} dot={{ r: 4 }} />
+              <Line
+                type="monotone"
+                dataKey="price"
+                stroke="#ec4899"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         ) : (
