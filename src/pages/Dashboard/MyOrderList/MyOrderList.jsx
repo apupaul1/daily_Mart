@@ -1,80 +1,236 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import { useNavigate } from 'react-router';
-import Loading from '../../../Shared/Loading/Loading';
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
+import {
+    Eye,
+    RotateCcw,
+    ShoppingBag,
+    TriangleAlert,
+} from "lucide-react";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import {
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableHead,
+    DataTableHeader,
+    DataTableRow,
+    TableAction,
+    TableEmpty,
+    TableLink,
+    TablePageHeader,
+    TableShell,
+    TableSkeleton,
+} from "../../../Shared/DashboardComponent/DataTable";
+
+const formatCurrency = (value) => {
+    if (value === null || value === undefined || value === "") return "—";
+
+    const numeric = Number(value);
+
+    return Number.isNaN(numeric)
+        ? String(value)
+        : `৳${numeric.toLocaleString("en-US")}`;
+};
+
+const formatDateTime = (value) => {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+};
 
 const MyOrderList = () => {
-    const { user,loading } = useAuth();
+    const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
-    const { data: payments = [] } = useQuery({
-        queryKey: ['payments', user.email],
+    const {
+        data: payments = [],
+        isPending,
+        isError,
+        error,
+        refetch,
+    } = useQuery({
+        queryKey: ["payments", user.email],
         queryFn: async () => {
-            const res = await axiosSecure.get(`/payments?email=${user.email}`);
+            const res = await axiosSecure.get(
+                `/payments?email=${user.email}`,
+            );
             return res.data;
         },
     });
 
-
-    if (loading) {
-        return <Loading></Loading>
-    }
-
-    // Handle navigating to product details page
     const handleViewDetails = (productId) => {
         navigate(`/details/${productId}`);
     };
 
-    // Render the payment data in a table format
-    return (
-        <div className=" py-5">
-            <h2 className="text-3xl font-bold text-center text-neutral mb-6">My Order List</h2>
+    const isLoading = loading || isPending;
 
-            {payments.length === 0 ? (
-                <p className="text-center text-gray-600">No payments found.</p>
+    return (
+        <div className="space-y-6 md:space-y-8">
+            <TablePageHeader
+                eyebrow="Purchases"
+                icon={ShoppingBag}
+                title="My orders"
+                description="Track your completed purchases, payment amounts, and transaction references."
+            >
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300/70 bg-base-100 px-3.5 py-2 text-[11px] font-semibold text-ink-soft">
+                    <ShoppingBag
+                        className="size-4 text-primary"
+                        strokeWidth={2}
+                        aria-hidden="true"
+                    />
+                    {isLoading
+                        ? "Loading orders…"
+                        : `${payments.length} order${payments.length === 1 ? "" : "s"}`}
+                </span>
+            </TablePageHeader>
+
+            {isLoading ? (
+                <TableSkeleton rows={5} columns={8} />
+            ) : isError ? (
+                <TableEmpty
+                    icon={TriangleAlert}
+                    title="We couldn't load your orders"
+                    description={
+                        error?.message ||
+                        "Please check your connection and try again."
+                    }
+                    action={
+                        <TableAction
+                            icon={RotateCcw}
+                            tone="primary"
+                            onClick={() => refetch()}
+                        >
+                            Try again
+                        </TableAction>
+                    }
+                />
+            ) : payments.length === 0 ? (
+                <TableEmpty
+                    icon={ShoppingBag}
+                    title="No orders yet"
+                    description="Once you complete a purchase, your order details and transaction reference will show up here."
+                    action={
+                        <TableLink
+                            to="/allproducts"
+                            icon={ShoppingBag}
+                            tone="primary"
+                        >
+                            Browse products
+                        </TableLink>
+                    }
+                />
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="table-auto w-full rounded-2xl shadow-lg bg-white">
-                        <thead className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-left">
-                            <tr>
-                                <th className="px-6 py-3">Product Name</th>
-                                <th className="px-6 py-3">Market Name</th>
-                                <th className="px-6 py-3">Price</th>
-                                <th className="px-6 py-3">Quantity</th>
-                                <th className="px-6 py-3">Amount</th>
-                                <th className="px-6 py-3">Transaction ID</th>
-                                <th className="px-6 py-3">Paid At</th>
-                                <th className="px-6 py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payments.map((payment) => (
-                                <tr key={payment.id} className="border-b border-b-gray-300 hover:bg-gray-50 transition-all duration-200">
-                                    <td className="px-6 py-3 text-gray-800">{payment.productName}</td>
-                                    <td className="px-6 py-3 text-gray-600">{payment.marketName}</td>
-                                    <td className="px-6 py-3 text-green-600">{payment.price}</td>
-                                    <td className="px-6 py-3 text-gray-800">{payment.quantity}</td>
-                                    <td className="px-6 py-3 text-blue-600">{payment.amount}</td>
-                                    <td className="px-6 py-3 text-gray-700">{payment.transactionId.slice(0,12)}...</td>
-                                    <td className="px-6 py-3 text-gray-500">
-                                        {new Date(payment.paid_at_string).toLocaleString()}
-                                    </td>
-                                    <td className="px-6 py-3 flex justify-center gap-3">
-                                        <button
-                                            onClick={() => handleViewDetails(payment.productId)}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm shadow-md transition duration-300"
+                <TableShell>
+                    <DataTable
+                        label="My orders"
+                        minWidthClass="md:min-w-[62rem]"
+                    >
+                        <DataTableHead>
+                            <DataTableHeader>Product</DataTableHeader>
+                            <DataTableHeader>Market</DataTableHeader>
+                            <DataTableHeader>Price</DataTableHeader>
+                            <DataTableHeader>Qty</DataTableHeader>
+                            <DataTableHeader>Amount</DataTableHeader>
+                            <DataTableHeader>Transaction</DataTableHeader>
+                            <DataTableHeader>Paid at</DataTableHeader>
+                            <DataTableHeader className="text-right">
+                                Actions
+                            </DataTableHeader>
+                        </DataTableHead>
+
+                        <DataTableBody>
+                            {payments.map((payment, index) => {
+                                const transactionId = String(
+                                    payment.transactionId || "",
+                                );
+
+                                return (
+                                    <DataTableRow
+                                        key={
+                                            payment.id ||
+                                            payment._id ||
+                                            transactionId ||
+                                            index
+                                        }
+                                    >
+                                        <DataTableCell
+                                            label="Product"
+                                            emphasis
                                         >
-                                            🔍 View Details
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                            {payment.productName || "—"}
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Market">
+                                            {payment.marketName || "—"}
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Price">
+                                            {formatCurrency(payment.price)}
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Quantity">
+                                            {payment.quantity ?? "—"}
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Amount">
+                                            <span className="font-display text-[15px] font-semibold text-primary">
+                                                {formatCurrency(payment.amount)}
+                                            </span>
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Transaction">
+                                            <span
+                                                title={transactionId}
+                                                className="inline-block max-w-full break-all rounded-lg bg-base-200 px-2 py-1 font-mono text-[11px] text-ink-soft"
+                                            >
+                                                {transactionId
+                                                    ? `${transactionId.slice(0, 12)}…`
+                                                    : "—"}
+                                            </span>
+                                        </DataTableCell>
+
+                                        <DataTableCell label="Paid at">
+                                            {formatDateTime(
+                                                payment.paid_at_string,
+                                            )}
+                                        </DataTableCell>
+
+                                        <DataTableCell
+                                            label="Actions"
+                                            align="end"
+                                        >
+                                            <div className="flex flex-wrap gap-2 md:justify-end">
+                                                <TableAction
+                                                    icon={Eye}
+                                                    tone="primary"
+                                                    onClick={() =>
+                                                        handleViewDetails(
+                                                            payment.productId,
+                                                        )
+                                                    }
+                                                >
+                                                    View details
+                                                </TableAction>
+                                            </div>
+                                        </DataTableCell>
+                                    </DataTableRow>
+                                );
+                            })}
+                        </DataTableBody>
+                    </DataTable>
+                </TableShell>
             )}
         </div>
     );

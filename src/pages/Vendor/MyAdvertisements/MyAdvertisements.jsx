@@ -1,86 +1,132 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { useForm } from 'react-hook-form';
-import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import Loading from '../../../Shared/Loading/Loading';
-// import AdvertisementFormModal from './AdvertisementFormModal'; // You must create this
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import {
+    ImagePlus,
+    Megaphone,
+    Pencil,
+    Plus,
+    Trash2,
+    Upload,
+    X,
+} from "lucide-react";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import {
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableHead,
+    DataTableHeader,
+    DataTableRow,
+    StatusPill,
+    TableAction,
+    TableEmpty,
+    TableLink,
+    TablePageHeader,
+    TableShell,
+    TableSkeleton,
+} from "../../../Shared/DashboardComponent/DataTable";
+
+const fieldClass =
+    "mt-1.5 w-full rounded-xl border border-base-300 bg-base-100 px-3.5 py-2.5 text-sm text-base-content placeholder:text-ink-soft/50 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15";
+
+const labelClass =
+    "block text-[10px] font-bold uppercase tracking-[0.14em] text-ink-soft/60";
 
 const MyAdvertisements = () => {
     const [selectedAd, setSelectedAd] = useState(null);
-    const queryClient = useQueryClient();
+    const [bannerImage, setBannerImage] = useState("");
+    const [uploading, setUploading] = useState(false);
 
-    const { user } = useAuth()
+    const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
+
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors }
+        formState: { errors },
     } = useForm({
         defaultValues: {
-            status: "pending"
-        }
+            status: "pending",
+        },
     });
 
-    const [bannerImage, setBannerImage] = useState('')
-
-
-    const handleBannerupload = async (e) => {
-        const banner = e.target.files[0];
-        console.log(banner);
-        const formData = new FormData();
-        formData.append('image', banner);
-
-        const bannerUploadURL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`
-        const res = await axios.post(bannerUploadURL, formData);
-
-        console.log(res.data);
-        setBannerImage(res.data.data.url);
-    }
-
-    console.log(user.email);
-
-    // Fetch current vendor ads
-    const { data: ads = [], refetch, isLoading } = useQuery({
-        queryKey: ['my-ads', user.email],
+    const {
+        data: ads = [],
+        refetch,
+        isLoading,
+    } = useQuery({
+        queryKey: ["my-ads", user.email],
         queryFn: async () => {
             const res = await axiosSecure.get(`/ads?email=${user.email}`);
             return res.data;
-        }
+        },
     });
+
+    const handleBannerupload = async (event) => {
+        const banner = event.target.files?.[0];
+        if (!banner) return;
+
+        setUploading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append("image", banner);
+
+            const bannerUploadURL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
+            const res = await axios.post(bannerUploadURL, formData);
+
+            setBannerImage(res.data.data.url);
+        } catch (error) {
+            console.error(error);
+            toast.error("Banner upload failed. Please try again.");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const closeEditor = () => {
+        document.getElementById("my_modal_5")?.close();
+    };
 
     const handleDelete = async (id) => {
         const confirm = await Swal.fire({
-            title: 'Are you sure?',
+            title: "Are you sure?",
             text: "This action cannot be undone!",
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
         });
+
         if (confirm.isConfirmed) {
             try {
-                axiosSecure.delete(`/ads/${id}`)
-                    .then(res => {
-                        if (res.data.deletedCount) {
-                            Swal.fire({
-                                title: "Deleted!",
-                                text: "Product has been deleted.",
-                                icon: "success",
-                                timer: 1500,
-                                showConfirmButton: false,
-                            });
-                        }
-                        refetch();
-                    })
+                const res = await axiosSecure.delete(`/ads/${id}`);
+
+                if (res.data.deletedCount) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Advertisement has been deleted.",
+                        icon: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+                }
+
+                refetch();
             } catch (error) {
                 console.error(error);
-                Swal.fire('Error!', error.message || 'Failed to delete the product.', 'error');
+                Swal.fire(
+                    "Error!",
+                    error.message || "Failed to delete the advertisement.",
+                    "error",
+                );
             }
         }
     };
@@ -90,16 +136,20 @@ const MyAdvertisements = () => {
             reset({
                 title: selectedAd.title,
                 description: selectedAd.description,
-                status: selectedAd.status || 'pending',
+                status: selectedAd.status || "pending",
             });
-            setBannerImage(selectedAd.banner); // Preload existing image (optional)
+            setBannerImage(selectedAd.banner || "");
         }
     }, [selectedAd, reset]);
 
     const onSubmit = async (data) => {
         try {
             if (!bannerImage) {
-                toast.error("Please wait for the image to finish uploading.");
+                toast.error(
+                    uploading
+                        ? "Please wait for the banner to finish uploading."
+                        : "Please upload a promotional banner.",
+                );
                 return;
             }
 
@@ -111,147 +161,306 @@ const MyAdvertisements = () => {
             };
 
             if (selectedAd) {
-                // Update ad
-                const res = await axiosSecure.patch(`/ads/${selectedAd._id}`, adData);
+                const res = await axiosSecure.patch(
+                    `/ads/${selectedAd._id}`,
+                    adData,
+                );
 
-                if (res.data.message === 'Ad updated successfully') {
+                if (res.data.message === "Ad updated successfully") {
                     toast.success("Advertisement updated successfully!");
                     setSelectedAd(null);
                     reset();
-                    setBannerImage('');
+                    setBannerImage("");
                     refetch();
-                    document.getElementById('my_modal_5').close(); // Close modal
-
+                    closeEditor();
                 } else {
                     toast.error("Update failed.");
                 }
             } else {
-                // Create new ad
                 const res = await axiosSecure.post("/ads", adData);
 
                 if (res.data.insertedId) {
                     toast.success("Advertisement submitted successfully!");
                     reset();
-                    setBannerImage('');
+                    setBannerImage("");
                     refetch();
                 } else {
                     toast.error("Submission failed.");
                 }
             }
-
-        } catch (err) {
-            console.error("Submit error:", err);
+        } catch (error) {
+            console.error("Submit error:", error);
             toast.error("Something went wrong.");
         }
     };
 
-
-    { isLoading && <Loading></Loading> }
-
     return (
-        <div className="p-6">
-            <h2 className="text-3xl font-bold text-center text-neutral mb-6">My Advertisements</h2>
-            <div className="overflow-x-auto">
-                <table className="table-auto w-full rounded-2xl shadow-lg bg-white">
-                    <thead className='bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-left'>
-                        <tr className='text-center'>
-                            <th className="px-6 py-3">Number</th>
-                            <th className="px-6 py-3">Ad Title</th>
-                            <th className="px-6 py-3">Description</th>
-                            <th className="px-6 py-3">Status</th>
-                            <th className="px-6 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ads.map((ad, index) => (
-                            <tr className='border-b text-center border-b-gray-300 hover:bg-gray-200 transition-all duration-200' key={ad._id}>
-                                <td className='px-6 py-3 text-gray-800'>{index + 1}</td>
-                                <td className='px-6 py-3 text-gray-800'>{ad.title}</td>
-                                <td className='px-6 py-3 text-gray-800'>{ad.description}</td>
-                                <td className="capitalize px-6 py-3 text-gray-800'">{ad.status}</td>
-                                <td className="flex gap-2 justify-center px-6 py-3 text-gray-800">
-                                    <button
-                                        onClick={() => {
-                                            setSelectedAd(ad);
-                                            document.getElementById('my_modal_5').showModal();
-                                        }}
-                                        className="btn btn-sm btn-warning"
-                                    >
-                                        Update
-                                    </button>
+        <div className="space-y-6 md:space-y-8">
+            <TablePageHeader
+                eyebrow="Marketing"
+                icon={Megaphone}
+                title="My advertisements"
+                description="Review your promotional campaigns, update creative details, and track approval status."
+            >
+                <TableLink
+                    to="/dashboard/postadvertisement"
+                    icon={Plus}
+                    tone="primary"
+                >
+                    Post advertisement
+                </TableLink>
 
-                                    <button
-                                        onClick={() => handleDelete(ad._id)}
-                                        className="btn btn-sm btn-error"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle ">
-                    <div className=" p-9 bg-white shadow rounded-lg relative">
-                        <h2 className="text-3xl font-bold mb-12 text-center">Update Advertisement</h2>
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                            method="dialog"
-                            className="space-y-4 ">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300/70 bg-base-100 px-3.5 py-2 text-[11px] font-semibold text-ink-soft">
+                    {isLoading
+                        ? "Loading campaigns…"
+                        : `${ads.length} campaign${ads.length === 1 ? "" : "s"}`}
+                </span>
+            </TablePageHeader>
 
-                            {/* Ad Title */}
-                            <div>
-                                <label className="label">Ad Title</label>
-                                <input
-                                    // defaultValue={ad.title}
-                                    {...register("title", { required: true })}
-                                    className="input input-bordered w-full"
-                                    placeholder="Enter ad title"
+            {isLoading ? (
+                <TableSkeleton rows={4} columns={5} />
+            ) : ads.length === 0 ? (
+                <TableEmpty
+                    icon={ImagePlus}
+                    title="No advertisements yet"
+                    description="Create a promotional banner to feature your store and products across the marketplace."
+                    action={
+                        <TableLink
+                            to="/dashboard/postadvertisement"
+                            icon={Plus}
+                            tone="primary"
+                        >
+                            Post your first advertisement
+                        </TableLink>
+                    }
+                />
+            ) : (
+                <TableShell>
+                    <DataTable
+                        label="My advertisements"
+                        minWidthClass="md:min-w-[50rem]"
+                    >
+                        <DataTableHead>
+                            <DataTableHeader>#</DataTableHeader>
+                            <DataTableHeader>Campaign</DataTableHeader>
+                            <DataTableHeader>Description</DataTableHeader>
+                            <DataTableHeader>Status</DataTableHeader>
+                            <DataTableHeader className="text-right">
+                                Actions
+                            </DataTableHeader>
+                        </DataTableHead>
+
+                        <DataTableBody>
+                            {ads.map((ad, index) => (
+                                <DataTableRow key={ad._id}>
+                                    <DataTableCell label="No.">
+                                        <span className="font-mono text-[12px] text-ink-soft/60">
+                                            {index + 1}
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Campaign" emphasis>
+                                        {ad.title || "Untitled campaign"}
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Description">
+                                        <span className="line-clamp-2 max-w-[24rem]">
+                                            {ad.description || "—"}
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Status">
+                                        <StatusPill
+                                            status={ad.status || "pending"}
+                                        />
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Actions" align="end">
+                                        <div className="flex flex-wrap gap-2 md:justify-end">
+                                            <TableAction
+                                                icon={Pencil}
+                                                tone="warning"
+                                                onClick={() => {
+                                                    setSelectedAd(ad);
+                                                    document
+                                                        .getElementById(
+                                                            "my_modal_5",
+                                                        )
+                                                        ?.showModal();
+                                                }}
+                                            >
+                                                Update
+                                            </TableAction>
+
+                                            <TableAction
+                                                icon={Trash2}
+                                                tone="danger"
+                                                onClick={() =>
+                                                    handleDelete(ad._id)
+                                                }
+                                            >
+                                                Delete
+                                            </TableAction>
+                                        </div>
+                                    </DataTableCell>
+                                </DataTableRow>
+                            ))}
+                        </DataTableBody>
+                    </DataTable>
+                </TableShell>
+            )}
+
+            <dialog
+                id="my_modal_5"
+                className="modal modal-bottom md:modal-middle"
+                onClose={() => {
+                    setSelectedAd(null);
+                    setBannerImage("");
+                }}
+            >
+                <div className="w-full max-w-lg rounded-t-[1.5rem] bg-base-100 p-5 shadow-soft md:rounded-[1.5rem] md:p-7">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <p className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/50">
+                                Marketing studio
+                            </p>
+                            <h3 className="mt-1.5 font-display text-xl font-semibold tracking-[-0.02em] text-base-content md:text-2xl">
+                                Update advertisement
+                            </h3>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={closeEditor}
+                            aria-label="Close advertisement editor"
+                            className="grid size-9 shrink-0 place-items-center rounded-full border border-base-300 text-ink-soft transition-colors duration-300 hover:border-primary/25 hover:text-primary"
+                        >
+                            <X
+                                className="size-4"
+                                strokeWidth={2}
+                                aria-hidden="true"
+                            />
+                        </button>
+                    </div>
+
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="mt-5 space-y-4"
+                    >
+                        <div>
+                            <label htmlFor="my-ad-title" className={labelClass}>
+                                Ad title
+                            </label>
+                            <input
+                                id="my-ad-title"
+                                {...register("title", { required: true })}
+                                className={fieldClass}
+                                placeholder="Enter ad title"
+                            />
+                            {errors.title && (
+                                <p className="mt-1.5 text-[11px] font-semibold text-error">
+                                    Title is required
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="my-ad-description"
+                                className={labelClass}
+                            >
+                                Short description
+                            </label>
+                            <textarea
+                                id="my-ad-description"
+                                {...register("description", {
+                                    required: true,
+                                })}
+                                className={[fieldClass, "min-h-24 resize-y"].join(
+                                    " ",
+                                )}
+                                placeholder="Enter description"
+                            />
+                            {errors.description && (
+                                <p className="mt-1.5 text-[11px] font-semibold text-error">
+                                    Description is required
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="my-ad-status" className={labelClass}>
+                                Status
+                            </label>
+                            <input
+                                id="my-ad-status"
+                                {...register("status")}
+                                readOnly
+                                className={[
+                                    fieldClass,
+                                    "cursor-not-allowed bg-base-200 text-ink-soft",
+                                ].join(" ")}
+                            />
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="my-ad-banner"
+                                className={labelClass}
+                            >
+                                Promotional banner
+                            </label>
+
+                            <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-dashed border-base-300 bg-base-200/40 px-3.5 py-2.5">
+                                <Upload
+                                    className="size-4 shrink-0 text-primary/60"
+                                    strokeWidth={1.9}
+                                    aria-hidden="true"
                                 />
-                                {errors.title && <p className="text-red-500 text-sm">Title is required</p>}
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <label className="label">Short Description</label>
-                                <textarea
-                                    // defaultValue={ad.description}
-                                    {...register("description", { required: true })}
-                                    className="textarea textarea-bordered w-full"
-                                    placeholder="Enter description"
-                                ></textarea>
-                                {errors.description && <p className="text-red-500 text-sm">Description is required</p>}
-                            </div>
-
-                            {/* Status (readonly field) */}
-                            <div>
-                                <label className="label">Status</label>
                                 <input
-                                    {...register("status")}
-                                    className="input input-bordered w-full bg-gray-100 text-gray-600 cursor-not-allowed"
-                                    readOnly
-                                />
-                            </div>
-
-                            {/* Image Upload */}
-                            <div className="form-control">
-                                <label className="label text-black">Promotional Banner</label>
-                                <input
+                                    id="my-ad-banner"
                                     onChange={handleBannerupload}
                                     type="file"
                                     accept="image/*"
-                                    className="file-input file-input-bordered w-full"
-                                    placeholder='Your Advertisement banner' />
+                                    className="w-full text-[12px] text-ink-soft file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-[11px] file:font-semibold file:text-primary-content"
+                                />
                             </div>
 
-                            {/* Submit */}
-                            <button className="btn btn-primary w-full" type="submit">Update Ad</button>
+                            {uploading && (
+                                <p className="mt-1.5 text-[11px] font-semibold text-primary">
+                                    Uploading banner…
+                                </p>
+                            )}
 
-                            <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-8">✕</button>
-                        </form>
-                    </div>
-                </dialog>
-            </div>
+                            {bannerImage && (
+                                <img
+                                    src={bannerImage}
+                                    alt="Advertisement banner preview"
+                                    className="mt-2 h-24 w-full rounded-xl object-cover"
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2 pt-1 md:flex-row">
+                            <button
+                                type="submit"
+                                disabled={uploading}
+                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13px] font-semibold text-primary-content transition-colors duration-300 hover:bg-forest-soft disabled:pointer-events-none disabled:opacity-50"
+                            >
+                                Update advertisement
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={closeEditor}
+                                className="inline-flex items-center justify-center rounded-full border border-base-300 bg-base-100 px-5 py-2.5 text-[13px] font-semibold text-ink-soft transition-colors duration-300 hover:border-primary/25 hover:text-primary"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
         </div>
     );
 };

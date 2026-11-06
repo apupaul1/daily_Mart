@@ -1,132 +1,240 @@
-import React from 'react';
-import useAuth from '../../../hooks/useAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
-import Swal from 'sweetalert2';
-import Loading from '../../../Shared/Loading/Loading';
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import {
+    PackagePlus,
+    Pencil,
+    Plus,
+    Trash2,
+} from "lucide-react";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import {
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableHead,
+    DataTableHeader,
+    DataTableRow,
+    StatusPill,
+    TableAction,
+    TableEmpty,
+    TableLink,
+    TablePageHeader,
+    TableShell,
+    TableSkeleton,
+} from "../../../Shared/DashboardComponent/DataTable";
+
+const formatPrice = (value) => {
+    if (value === null || value === undefined || value === "") return "—";
+
+    const numeric = Number(value);
+
+    return Number.isNaN(numeric)
+        ? String(value)
+        : `৳${numeric.toLocaleString("en-US")}`;
+};
+
+const formatDate = (value) => {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+};
 
 const MyAddedProduct = () => {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
-
-    const { data: products = [], refetch, isLoading } = useQuery({
-        queryKey: ['my-products', user.email],
+    const {
+        data: products = [],
+        refetch,
+        isLoading,
+    } = useQuery({
+        queryKey: ["my-products", user.email],
         queryFn: async () => {
             const res = await axiosSecure.get(`/products?email=${user.email}`);
             return res.data;
         },
     });
 
-    // console.log(products);
-
     const handleUpdate = (id) => {
         navigate(`/dashboard/update-product/${id}`);
-    }
-
-    console.log(handleUpdate);
+    };
 
     const handleDelete = async (id) => {
         const confirm = await Swal.fire({
-            title: 'Are you sure?',
+            title: "Are you sure?",
             text: "This action cannot be undone!",
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
         });
+
         if (confirm.isConfirmed) {
             try {
-                axiosSecure.delete(`/products/${id}`)
-                    .then(res => {
-                        if (res.data.deletedCount) {
-                            Swal.fire({
-                                title: "Deleted!",
-                                text: "Product has been deleted.",
-                                icon: "success",
-                                timer: 1500,
-                                showConfirmButton: false,
-                            });
-                        }
-                        refetch();
-                    })
+                const res = await axiosSecure.delete(`/products/${id}`);
+
+                if (res.data.deletedCount) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Product has been deleted.",
+                        icon: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+                }
+
+                refetch();
             } catch (error) {
                 console.error(error);
-                Swal.fire('Error!', error.message || 'Failed to delete the product.', 'error');
+                Swal.fire(
+                    "Error!",
+                    error.message || "Failed to delete the product.",
+                    "error",
+                );
             }
         }
     };
 
-    if (isLoading) return <Loading></Loading>
-
     return (
-        <div className="">
-            <h2 className="text-xl lg:text-3xl font-semibold mb-4 text-center ">
-                My Added Products
-            </h2>
+        <div className="space-y-6 md:space-y-8">
+            <TablePageHeader
+                eyebrow="Vendor catalog"
+                icon={PackagePlus}
+                title="My products"
+                description="Manage the produce you have listed, update pricing, and keep every listing current."
+            >
+                <TableLink
+                    to="/dashboard/addproduct"
+                    icon={Plus}
+                    tone="primary"
+                >
+                    Add product
+                </TableLink>
 
-            <div className="overflow-x-auto rounded-lg border shadow-sm">
-                <table className="table w-full text-sm">
-                    <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
-                        <tr>
-                            <th>#</th>
-                            <th>Item Name</th>
-                            <th>Price per Unit</th>
-                            <th>Market Name</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th className="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map((product, index) => (
-                            <tr key={product._id}>
-                                <td>{index + 1}</td>
-                                <td className="min-w-[120px]">{product.itemName}</td>
-                                <td className="whitespace-nowrap">{product.pricePerUnit}</td>
-                                <td className="min-w-[140px]">{product.marketName}</td>
-                                <td>{new Date(product.date).toLocaleDateString()}</td>
-                                <td>
-                                    <div
-                                        className={`badge mb-1 cursor-default tooltip ${product.status === 'approved'
-                                                ? 'badge-success'
-                                                : product.status === 'rejected'
-                                                    ? 'badge-error'
-                                                    : 'badge-warning'
-                                            }`}
-                                        data-tip={
-                                            product.status === 'rejected' && product.rejectionReason
-                                                ? product.rejectionReason
-                                                : ''
-                                        }
-                                    >
-                                        {product.status}
-                                    </div>
-                                </td>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300/70 bg-base-100 px-3.5 py-2 text-[11px] font-semibold text-ink-soft">
+                    {isLoading
+                        ? "Loading products…"
+                        : `${products.length} product${products.length === 1 ? "" : "s"}`}
+                </span>
+            </TablePageHeader>
 
+            {isLoading ? (
+                <TableSkeleton rows={5} columns={7} />
+            ) : products.length === 0 ? (
+                <TableEmpty
+                    icon={PackagePlus}
+                    title="No products yet"
+                    description="Add your first listing so shoppers can discover your fresh produce."
+                    action={
+                        <TableLink
+                            to="/dashboard/addproduct"
+                            icon={Plus}
+                            tone="primary"
+                        >
+                            Add your first product
+                        </TableLink>
+                    }
+                />
+            ) : (
+                <TableShell>
+                    <DataTable
+                        label="My products"
+                        minWidthClass="md:min-w-[56rem]"
+                    >
+                        <DataTableHead>
+                            <DataTableHeader>#</DataTableHeader>
+                            <DataTableHeader>Item</DataTableHeader>
+                            <DataTableHeader>Price / unit</DataTableHeader>
+                            <DataTableHeader>Market</DataTableHeader>
+                            <DataTableHeader>Added</DataTableHeader>
+                            <DataTableHeader>Status</DataTableHeader>
+                            <DataTableHeader className="text-right">
+                                Actions
+                            </DataTableHeader>
+                        </DataTableHead>
 
-                                <td className="flex flex-col lg:flex-row gap-2 justify-center items-center">
-                                    <button
-                                        className="btn btn-sm btn-info w-24"
-                                        onClick={() => handleUpdate(product._id)}
-                                    >
-                                        Update
-                                    </button>
-                                    <button
-                                        className="btn btn-sm btn-error w-24"
-                                        onClick={() => handleDelete(product._id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        <DataTableBody>
+                            {products.map((product, index) => (
+                                <DataTableRow key={product._id}>
+                                    <DataTableCell label="No.">
+                                        <span className="font-mono text-[12px] text-ink-soft/60">
+                                            {index + 1}
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Item" emphasis>
+                                        {product.itemName || "Unnamed item"}
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Price / unit">
+                                        <span className="font-display text-[15px] font-semibold text-primary">
+                                            {formatPrice(
+                                                product.pricePerUnit,
+                                            )}
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Market">
+                                        {product.marketName || "—"}
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Added">
+                                        {formatDate(product.date)}
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Status">
+                                        <StatusPill
+                                            status={product.status || "pending"}
+                                            title={
+                                                product.status === "rejected" &&
+                                                product.rejectionReason
+                                                    ? product.rejectionReason
+                                                    : undefined
+                                            }
+                                        />
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Actions" align="end">
+                                        <div className="flex flex-wrap gap-2 md:justify-end">
+                                            <TableAction
+                                                icon={Pencil}
+                                                tone="warning"
+                                                onClick={() =>
+                                                    handleUpdate(product._id)
+                                                }
+                                            >
+                                                Update
+                                            </TableAction>
+
+                                            <TableAction
+                                                icon={Trash2}
+                                                tone="danger"
+                                                onClick={() =>
+                                                    handleDelete(product._id)
+                                                }
+                                            >
+                                                Delete
+                                            </TableAction>
+                                        </div>
+                                    </DataTableCell>
+                                </DataTableRow>
+                            ))}
+                        </DataTableBody>
+                    </DataTable>
+                </TableShell>
+            )}
         </div>
     );
 };

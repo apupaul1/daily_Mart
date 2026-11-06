@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import { toast } from 'react-toastify';
-import { FiSearch } from 'react-icons/fi';
-import Loading from '../../../Shared/Loading/Loading';
-
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { Search, ShieldCheck, Store, Users } from "lucide-react";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import DashboardAvatar from "../../../Shared/DashboardComponent/DashboardAvatar";
+import {
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableHead,
+    DataTableHeader,
+    DataTableRow,
+    StatusPill,
+    TableAction,
+    TableEmpty,
+    TablePageHeader,
+    TableShell,
+    TableSkeleton,
+} from "../../../Shared/DashboardComponent/DataTable";
 
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();
     const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
 
-    // Fetch users with search param
     const { data: users = [], isLoading } = useQuery({
-        queryKey: ['all-users', search],
+        queryKey: ["all-users", search],
         queryFn: async () => {
             const res = await axiosSecure.get(`/users?search=${search}`);
             return res.data;
@@ -26,7 +38,7 @@ const AllUsers = () => {
         },
         onSuccess: () => {
             toast.success("User role updated!");
-            queryClient.invalidateQueries(['all-users']);
+            queryClient.invalidateQueries({ queryKey: ["all-users"] });
         },
         onError: () => {
             toast.error("Failed to update role.");
@@ -37,70 +49,171 @@ const AllUsers = () => {
         mutation.mutate({ id, role: newRole });
     };
 
-    return (
-        <div className="px-4 py-10">
-            <h2 className="text-3xl font-bold text-center text-neutral mb-6">All Users</h2>
+    const isRowUpdating = (id) =>
+        mutation.isPending && mutation.variables?.id === id;
 
-            <div className="flex justify-center mb-6">
-                <div className="relative w-full max-w-md">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                        <FiSearch className="text-lg" />
-                    </span>
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search by name or email..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    return (
+        <div className="space-y-6 md:space-y-8">
+            <TablePageHeader
+                eyebrow="Administration"
+                icon={Users}
+                title="All users"
+                description="Review every registered account and promote trusted members to vendors or administrators."
+            >
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300/70 bg-base-100 px-3.5 py-2 text-[11px] font-semibold text-ink-soft">
+                    <Users
+                        className="size-4 text-primary"
+                        strokeWidth={2}
+                        aria-hidden="true"
                     />
-                </div>
+                    {users.length} account{users.length === 1 ? "" : "s"}
+                </span>
+            </TablePageHeader>
+
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <label className="flex items-center gap-2 rounded-xl border border-base-300 bg-base-100 px-3.5 transition-colors duration-300 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:max-w-md md:flex-1">
+                    <Search
+                        className="size-4 shrink-0 text-ink-soft/45"
+                        strokeWidth={1.9}
+                        aria-hidden="true"
+                    />
+                    <span className="sr-only">Search users</span>
+                    <input
+                        type="search"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder="Search by name or email…"
+                        className="w-full bg-transparent py-2.5 text-sm text-base-content placeholder:text-ink-soft/50 focus:outline-none"
+                    />
+                </label>
+
+                <p className="text-[12px] text-ink-soft">
+                    {isLoading
+                        ? "Loading accounts…"
+                        : `Showing ${users.length} account${
+                              users.length === 1 ? "" : "s"
+                          }`}
+                </p>
             </div>
 
-
             {isLoading ? (
-                <Loading></Loading>
+                <TableSkeleton rows={5} columns={4} />
             ) : users.length === 0 ? (
-                <p className="text-center text-gray-600">No users found.</p>
+                <TableEmpty
+                    icon={Users}
+                    title={search ? "No matching accounts" : "No users yet"}
+                    description={
+                        search
+                            ? "Try a different name or email address to find the account you need."
+                            : "New accounts will appear here as soon as people register."
+                    }
+                    action={
+                        search ? (
+                            <TableAction
+                                icon={Search}
+                                tone="primary"
+                                onClick={() => setSearch("")}
+                            >
+                                Clear search
+                            </TableAction>
+                        ) : null
+                    }
+                />
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="table-auto w-full rounded-lg shadow-md bg-white">
-                        <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                            <tr>
-                                <th className="px-6 py-3">Name</th>
-                                <th className="px-6 py-3">Email</th>
-                                <th className="px-6 py-3">Role</th>
-                                <th className="px-6 py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map(user => (
-                                <tr key={user._id} className="border-b text-center border-b-gray-300 hover:bg-gray-50">
-                                    <td className="px-6 py-3 text-gray-800">{user.name || 'N/A'}</td>
-                                    <td className="px-6 py-3 text-gray-700">{user.email}</td>
-                                    <td className="px-6 py-3 capitalize font-medium text-blue-700">{user.role || 'user'}</td>
-                                    <td className="px-6 py-3 flex gap-2 justify-center">
-                                        {user.role !== 'admin' && (
-                                            <button
-                                                onClick={() => handleRoleChange(user._id, 'admin')}
-                                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
-                                            >
-                                                Make Admin
-                                            </button>
-                                        )}
-                                        {user.role !== 'vendor' && (
-                                            <button
-                                                onClick={() => handleRoleChange(user._id, 'vendor')}
-                                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                                            >
-                                                Make Vendor
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
+                <TableShell>
+                    <DataTable label="All users" minWidthClass="md:min-w-[44rem]">
+                        <DataTableHead>
+                            <DataTableHeader>User</DataTableHeader>
+                            <DataTableHeader>Email</DataTableHeader>
+                            <DataTableHeader>Role</DataTableHeader>
+                            <DataTableHeader className="text-right">
+                                Actions
+                            </DataTableHeader>
+                        </DataTableHead>
+
+                        <DataTableBody>
+                            {users.map((user) => (
+                                <DataTableRow key={user._id}>
+                                    <DataTableCell label="User" emphasis>
+                                        <span className="flex items-center gap-2.5">
+                                            <DashboardAvatar
+                                                user={{
+                                                    displayName: user.name,
+                                                    email: user.email,
+                                                    photoURL: user.photoURL,
+                                                }}
+                                                tone="light"
+                                                className="size-8"
+                                                textClassName="text-[9.5px]"
+                                            />
+                                            <span className="min-w-0">
+                                                <span className="block truncate">
+                                                    {user.name || "Unnamed user"}
+                                                </span>
+                                                <span className="block truncate text-[11px] font-normal text-ink-soft md:hidden">
+                                                    {user.email}
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Email">
+                                        <span className="break-all">
+                                            {user.email || "—"}
+                                        </span>
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Role">
+                                        <StatusPill
+                                            status={user.role || "user"}
+                                            label={user.role || "user"}
+                                        />
+                                    </DataTableCell>
+
+                                    <DataTableCell label="Actions" align="end">
+                                        <div className="flex flex-wrap gap-2 md:justify-end">
+                                            {user.role !== "admin" && (
+                                                <TableAction
+                                                    icon={ShieldCheck}
+                                                    tone="primary"
+                                                    onClick={() =>
+                                                        handleRoleChange(
+                                                            user._id,
+                                                            "admin",
+                                                        )
+                                                    }
+                                                    disabled={isRowUpdating(
+                                                        user._id,
+                                                    )}
+                                                >
+                                                    Make admin
+                                                </TableAction>
+                                            )}
+
+                                            {user.role !== "vendor" && (
+                                                <TableAction
+                                                    icon={Store}
+                                                    tone="warning"
+                                                    onClick={() =>
+                                                        handleRoleChange(
+                                                            user._id,
+                                                            "vendor",
+                                                        )
+                                                    }
+                                                    disabled={isRowUpdating(
+                                                        user._id,
+                                                    )}
+                                                >
+                                                    Make vendor
+                                                </TableAction>
+                                            )}
+                                        </div>
+                                    </DataTableCell>
+                                </DataTableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
+                        </DataTableBody>
+                    </DataTable>
+                </TableShell>
             )}
         </div>
     );
