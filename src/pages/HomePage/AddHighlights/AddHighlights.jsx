@@ -97,7 +97,7 @@ const AddHighlights = () => {
                   aria-hidden="true"
                 />
               </span>
-              <p className="mt-4 font-display text-xl font-semibold text-primary-content">
+              <p className="mt-4 text-xl font-semibold text-primary-content">
                 Promotions couldn&apos;t load
               </p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-primary-content/55">
@@ -128,7 +128,7 @@ const AddHighlights = () => {
                   aria-hidden="true"
                 />
               </span>
-              <p className="mt-4 font-display text-xl font-semibold text-primary-content">
+              <p className="mt-4  text-xl font-semibold text-primary-content">
                 No approved ads right now
               </p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-primary-content/55">
@@ -174,7 +174,7 @@ const AddHighlights = () => {
 
                     <div className="col-start-1 row-start-1 flex flex-col justify-end gap-1.5 bg-linear-to-t from-forest/95 via-forest/35 to-transparent p-4 pt-16 sm:gap-2 sm:p-7 sm:pt-24 lg:p-9">
                       {current.title && (
-                        <h3 className="max-w-2xl font-display text-lg font-semibold leading-tight tracking-[-0.02em] text-primary-content sm:text-2xl lg:text-3xl">
+                        <h3 className="max-w-2xl  text-lg font-semibold leading-tight tracking-[-0.02em] text-primary-content sm:text-2xl lg:text-3xl">
                           {current.title}
                         </h3>
                       )}

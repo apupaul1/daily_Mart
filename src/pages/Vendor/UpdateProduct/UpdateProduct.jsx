@@ -15,11 +15,11 @@ import {
     FaStickyNote,
 } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router';
-import { toast } from 'react-toastify';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../../../Shared/Loading/Loading';
+import { toast } from 'sonner';
 
 const UpdateProduct = () => {
     const { register, handleSubmit, control, setValue, watch, reset } = useForm({

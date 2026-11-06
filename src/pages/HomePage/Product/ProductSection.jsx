@@ -66,7 +66,7 @@ const ProductSection = () => {
             <span className="grid size-12 place-items-center rounded-2xl bg-citron/40 text-primary">
               <ShoppingBasket className="size-6" strokeWidth={1.6} />
             </span>
-            <p className="mt-4 font-display text-xl font-semibold text-base-content">
+            <p className="mt-4 text-xl font-semibold text-base-content">
               No fresh picks yet
             </p>
             <p className="mt-1.5 max-w-sm text-sm text-ink-soft">

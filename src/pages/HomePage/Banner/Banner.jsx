@@ -134,7 +134,7 @@ const Banner = () => {
                   </div>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <p className="font-display text-xl font-semibold leading-none text-primary">
+                  <p className="text-3xl font-semibold leading-none text-primary">
                     ৳45
                     <span className="ml-0.5 font-sans text-[10px] font-semibold text-base-content/45">
                       /kg

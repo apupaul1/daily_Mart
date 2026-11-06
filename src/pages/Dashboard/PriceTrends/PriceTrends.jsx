@@ -142,7 +142,7 @@ const PriceTooltip = ({ active, payload }) => {
             <p className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-ink-soft/50">
                 {point.fullDate}
             </p>
-            <p className="mt-1 font-display text-lg font-semibold text-primary">
+            <p className="mt-1 text-lg font-semibold text-primary">
                 {formatPrice(point.price)}
             </p>
             <p className="mt-0.5 text-[10.5px] text-ink-soft">
@@ -168,7 +168,7 @@ const StatTile = ({ icon, label, value, hint, tone = "default" }) => {
 
             <p
                 className={[
-                    "mt-2 font-display text-xl font-semibold tracking-[-0.02em] md:text-2xl",
+                    "mt-2 text-xl font-semibold tracking-[-0.02em] md:text-2xl",
                     tone === "positive"
                         ? "text-primary"
                         : tone === "negative"
@@ -465,7 +465,7 @@ const PriceTrends = () => {
                                         </span>
 
                                         <span className="shrink-0 text-right">
-                                            <span className="block font-display text-[13px] font-semibold text-primary">
+                                            <span className="block text-[13px] font-semibold text-primary">
                                                 {itemPrice === null
                                                     ? "—"
                                                     : formatPrice(itemPrice)}
@@ -491,7 +491,7 @@ const PriceTrends = () => {
                                         Selected item
                                     </p>
 
-                                    <h3 className="mt-2 break-words font-display text-2xl font-semibold leading-tight tracking-[-0.02em] text-base-content md:text-3xl">
+                                    <h3 className="mt-2 break-words text-2xl font-semibold leading-tight tracking-[-0.02em] text-base-content md:text-3xl">
                                         {activeItem.productName ||
                                             "Untitled product"}
                                     </h3>
@@ -795,7 +795,7 @@ const PriceTrends = () => {
                                                     />
                                                 </span>
 
-                                                <p className="mt-3 font-display text-lg font-semibold text-base-content">
+                                                <p className="mt-3 text-lg font-semibold text-base-content">
                                                     {fullSeries.length
                                                         ? "Not enough data for this range"
                                                         : "No price history yet"}

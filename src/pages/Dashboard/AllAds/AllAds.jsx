@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { toast } from "react-toastify";
 import {
     Check,
     Megaphone,
@@ -22,6 +21,7 @@ import {
     TableShell,
     TableSkeleton,
 } from "../../../Shared/DashboardComponent/DataTable";
+import { toast } from "sonner";
 
 const AllAds = () => {
     const axiosSecure = useAxiosSecure();

@@ -40,7 +40,7 @@ const buyerLinks = [
 
 const roleMeta = {
     admin: { section: "Administration", label: "Administrator" },
-    vendor: { section: "Storefront", label: "Vendor" },
+    vendor: { section: "Options", label: "Vendor" },
     user: { section: "Shopping", label: "Shopper" },
 };
 
@@ -243,7 +243,7 @@ const Sidebar = ({ onClose }) => {
                             strokeWidth={1.85}
                             aria-hidden="true"
                         />
-                        Back to storefront
+                        Back to home
                     </span>
                     <ArrowUpRight
                         className="size-3.5 opacity-60 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

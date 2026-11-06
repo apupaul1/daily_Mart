@@ -101,7 +101,7 @@ const FAQSection = () => {
                     aria-controls={isOpen ? panelId : undefined}
                     className="group flex w-full items-center gap-3 px-4 py-4 text-left md:gap-4 md:px-6 md:py-5"
                   >
-                    <span className="font-display text-xs font-semibold tracking-[0.14em] text-ink-soft/40 md:text-sm">
+                    <span className="text-xs font-semibold tracking-[0.14em] text-ink-soft/40 md:text-sm">
                       {String(index + 1).padStart(2, "0")}
                     </span>
 

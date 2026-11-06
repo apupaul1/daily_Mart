@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import useAuth from "../../../hooks/useAuth";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 const Login = () => {
   const {
@@ -20,6 +20,7 @@ const Login = () => {
     signIn(data.email, data.password)
       .then((result) => {
         navigate(from);
+        toast.success("Login Successfull")
       })
       .catch((error) => {
         toast.error(error.message);

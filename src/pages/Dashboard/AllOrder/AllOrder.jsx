@@ -156,7 +156,7 @@ const AllOrder = () => {
                                     </DataTableCell>
 
                                     <DataTableCell label="Amount">
-                                        <span className="font-display text-[15px] font-semibold text-primary">
+                                        <span className="text-[15px] font-semibold text-primary">
                                             {formatCurrency(payment.amount)}
                                         </span>
                                     </DataTableCell>

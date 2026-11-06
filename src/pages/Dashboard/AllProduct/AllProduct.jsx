@@ -185,7 +185,7 @@ const AllProducts = () => {
                                     </DataTableCell>
 
                                     <DataTableCell label="Price">
-                                        <span className="font-display text-[15px] font-semibold text-primary">
+                                        <span className=" text-[15px] font-semibold text-primary">
                                             {formatPrice(product.pricePerUnit)}
                                         </span>
                                     </DataTableCell>

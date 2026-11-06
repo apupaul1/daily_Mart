@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import {
   ArrowLeft,
@@ -44,6 +43,7 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import UseUserRole from "../../hooks/UseUserRole";
 import DashboardAvatar from "../../Shared/DashboardComponent/DashboardAvatar";
 import { StatusPill } from "../../Shared/DashboardComponent/DataTable";
+import { toast } from "sonner";
 
 const API_BASE = "https://daily-mart-server.vercel.app";
 
@@ -599,7 +599,7 @@ const ViewDetailsProduct = () => {
 
       <article className="mt-5 overflow-hidden rounded-[1.75rem] border border-base-300/70 bg-base-100 shadow-card md:mt-6">
         <div className="grid md:grid-cols-2">
-          <div className="group aspect-[4/3] overflow-hidden bg-base-200 md:aspect-auto md:h-full md:min-h-[28rem]">
+          <div className="group aspect-[4/3] overflow-hidden bg-white md:aspect-auto md:h-full md:min-h-[28rem] md:p-20">
             <ProductImage
               src={product.imageUrl}
               alt={product.itemName || "Market product"}
@@ -608,21 +608,12 @@ const ViewDetailsProduct = () => {
 
           <div className="flex flex-col p-5 md:p-6 lg:p-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">
-                <BadgeCheck
-                  className="size-3"
-                  strokeWidth={2.2}
-                  aria-hidden="true"
-                />
-                Market listing
-              </span>
+              <h1 className="mt-3 break-words  text-3xl font-semibold leading-[1.08] tracking-[-0.03em] text-base-content md:text-4xl ">
+                {product.itemName || "Untitled product"}
+              </h1>
 
               <StatusPill status={product.status || "pending"} />
             </div>
-
-            <h1 className="mt-3 break-words  text-3xl font-semibold leading-[1.08] tracking-[-0.03em] text-base-content md:text-4xl lg:text-5xl">
-              {product.itemName || "Untitled product"}
-            </h1>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300/70 bg-base-100 px-2.5 py-1 text-[10.5px] font-semibold text-ink-soft">
@@ -707,7 +698,7 @@ const ViewDetailsProduct = () => {
               <DetailItem
                 icon={Tag}
                 label="Price per unit"
-                value={formatPrice(product.pricePerUnit)}
+                value={product.pricePerUnit}
               />
 
               <DetailItem

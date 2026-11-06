@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import useAuth from '../../../hooks/useAuth';
-import { toast } from 'react-toastify';
 import Loading from '../../../Shared/Loading/Loading';
+import { toast } from 'sonner';
 
 const PaymentForm = () => {
 

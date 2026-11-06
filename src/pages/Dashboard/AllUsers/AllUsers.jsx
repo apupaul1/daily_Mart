@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 import { Search, ShieldCheck, Store, Users } from "lucide-react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import DashboardAvatar from "../../../Shared/DashboardComponent/DashboardAvatar";
@@ -18,6 +17,7 @@ import {
     TableShell,
     TableSkeleton,
 } from "../../../Shared/DashboardComponent/DataTable";
+import { toast } from "sonner";
 
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();

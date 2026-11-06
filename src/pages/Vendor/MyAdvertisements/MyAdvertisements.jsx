@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import {
@@ -30,6 +29,7 @@ import {
     TableShell,
     TableSkeleton,
 } from "../../../Shared/DashboardComponent/DataTable";
+import { toast } from "sonner";
 
 const fieldClass =
     "mt-1.5 w-full rounded-xl border border-base-300 bg-base-100 px-3.5 py-2.5 text-sm text-base-content placeholder:text-ink-soft/50 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15";
@@ -324,7 +324,7 @@ const MyAdvertisements = () => {
                             <p className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/50">
                                 Marketing studio
                             </p>
-                            <h3 className="mt-1.5 font-display text-xl font-semibold tracking-[-0.02em] text-base-content md:text-2xl">
+                            <h3 className="mt-1.5 text-xl font-semibold tracking-[-0.02em] text-base-content md:text-2xl">
                                 Update advertisement
                             </h3>
                         </div>
