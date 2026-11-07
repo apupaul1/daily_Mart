@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import Footer from '../Shared/Footer/Footer'
 
 const accountLinkClass = ({ isActive }) =>
   [
@@ -64,6 +65,8 @@ const AuthLayout = () => {
       <main className="mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10 lg:px-10 lg:py-10">
         <Outlet />
       </main>
+
+      <Footer/>
     </div>
   );
 };

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   ArrowRight,
   ArrowUpDown,
   BadgeCheck,
+  Boxes,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
+import { ProductGridSkeleton } from "../../Shared/Loading/Skeletons";
 
 const limit = 8;
 
@@ -82,18 +84,6 @@ const ProductImage = ({ src, alt }) => {
   );
 };
 
-const ProductSkeleton = () => (
-  <div className="overflow-hidden rounded-[1.5rem] border border-base-300/60 bg-base-100">
-    <div className="aspect-[16/10] animate-pulse bg-base-200" />
-    <div className="space-y-3 p-4 md:p-5">
-      <div className="h-2.5 w-24 animate-pulse rounded-full bg-base-200" />
-      <div className="h-4 w-3/4 animate-pulse rounded-full bg-base-200" />
-      <div className="mt-5 h-2.5 w-20 animate-pulse rounded-full bg-base-200" />
-      <div className="h-9 w-full animate-pulse rounded-full bg-base-200" />
-    </div>
-  </div>
-);
-
 const AllProducts = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -135,13 +125,13 @@ const AllProducts = () => {
   const totalPages = Number(products.pages) || 0;
   const hasAppliedFilters = Boolean(appliedSort || appliedStart || appliedEnd);
 
-  const handleDetails = (id) => {
-    if (!user?.email) {
-      navigate("/login");
-    } else {
-      navigate(`/details/${id}`);
-    }
-  };
+  // const handleDetails = (id) => {
+  //   if (!user?.email) {
+  //     navigate("/login");
+  //   } else {
+  //     navigate(`/details/${id}`);
+  //   }
+  // };
 
   const goToPage = (nextPage) => {
     setPage(nextPage);
@@ -346,15 +336,10 @@ const AllProducts = () => {
 
       {/* Products */}
       {isLoading ? (
-        <div
-          aria-busy="true"
+        <ProductGridSkeleton
+          count={limit}
           className="mt-4 grid gap-4 md:mt-5 md:grid-cols-2 md:gap-5 lg:grid-cols-4 lg:gap-6"
-        >
-          <span className="sr-only">Loading products</span>
-          {Array.from({ length: limit }).map((_, index) => (
-            <ProductSkeleton key={index} />
-          ))}
-        </div>
+        />
       ) : isError ? (
         <div className="mt-4 grid place-items-center rounded-[1.5rem] border border-dashed border-base-300 bg-base-200/40 px-6 py-14 text-center md:mt-5 md:py-20">
           <div>
@@ -479,12 +464,39 @@ const AllProducts = () => {
                     <dt className="sr-only">Listed on</dt>
                     <dd>{formatDate(product.date)}</dd>
                   </div>
+
+                  <div className="flex items-center gap-2">
+                    <Boxes
+                      className="size-3.5 shrink-0 text-primary/55"
+                      strokeWidth={1.9}
+                      aria-hidden="true"
+                    />
+                    <dt className="sr-only">Stock</dt>
+                    <dd
+                      className={
+                        product.stock !== undefined &&
+                        product.stock !== null &&
+                        product.stock !== "" &&
+                        Number(product.stock) <= 0
+                          ? "font-semibold text-error"
+                          : undefined
+                      }
+                    >
+                      {product.stock === undefined ||
+                      product.stock === null ||
+                      product.stock === ""
+                        ? "Stock not set"
+                        : Number(product.stock) <= 0
+                          ? "Out of stock"
+                          : `${product.stock} in stock`}
+                    </dd>
+                  </div>
                 </dl>
 
                 <div className="mt-auto pt-4">
-                  <button
+                  <Link
+                    to={`/details/${product._id}`}
                     type="button"
-                    onClick={() => handleDetails(product._id)}
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary py-2.5 text-[13px] font-semibold text-primary-content transition-colors duration-300 hover:bg-forest-soft"
                   >
                     View details
@@ -493,7 +505,7 @@ const AllProducts = () => {
                       strokeWidth={2}
                       aria-hidden="true"
                     />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>

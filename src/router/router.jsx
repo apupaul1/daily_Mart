@@ -33,132 +33,172 @@ import Blog from "../pages/Blog/Blog";
 import MyProfile from "../pages/Dashboard/MyProfile/MyProfile";
 import AllDiscountsPage from "../pages/AllDiscountsPage/AllDiscountsPage";
 
-
 export const router = createBrowserRouter([
-    {
-        path: '/',
-        Component: RootLayout,
-        children: [
-            {
-                index: true,
-                Component: HomePage
-            },
-            {
-                path: 'forbidden',
-                Component: Forbidden
-            },
-            {
-                path: 'allproducts',
-                Component: AllProducts
-            },
-            {
-                path: 'discount-product',
-                Component: AllDiscountsPage
-            },
-            {
-                path: 'blogs',
-                Component: Blog
-            },
-            {
-                path: 'details/:id',
-                element: <PrivateRoute> <ViewDetailsProduct></ViewDetailsProduct> </PrivateRoute>
-            },
-            {
-                path: 'Aboutus',
-                Component: About
-            },
-            {
-                path: 'Contactus',
-                Component: Contact
-            },
-            {
-                path: 'TermsandConditions',
-                Component: Terms
-            }
-        ]
-    },
-    {
-        path: '/',
-        Component: AuthLayout,
-        children: [
-            {
-                path: 'login',
-                Component: Login
-            },
-            {
-                path: 'register',
-                Component: Register
-            }
-        ]
-    },
-    {
-        path: '/dashboard',
-        element: <PrivateRoute> <DashboardLayout></DashboardLayout> </PrivateRoute>,
-        children: [
-            {
-                index: true,
-                Component: Dashboard
-            },
-            {
-                path: 'myorder',
-                Component: MyOrderList
-            },
-            {
-                path: 'myprofile',
-                Component: MyProfile
-            },
-            {
-                path: 'payment/:productId',
-                Component: Payment
-            },
-            {
-                path: 'addproduct', 
-                element: <VendorRoute><AddProduct></AddProduct></VendorRoute>
-            },
-            {
-                path: 'my-products',
-                element: <VendorRoute><MyAddedProduct></MyAddedProduct></VendorRoute>
-            },
-            {
-                path: 'postadvertisement',
-                element: <VendorRoute><AdvertisementForm></AdvertisementForm></VendorRoute>
-            },
-            {
-                path: 'my-ads',
-                element: <VendorRoute><MyAdvertisements></MyAdvertisements></VendorRoute>
-            },
-            {
-                path: 'watchlist',
-                Component: ManageWatchlist
-            },
-            {
-                path: 'price-trends',
-                Component: PriceTrends,
-            },
-            {
-                path: 'update-product/:id',
-                Component: UpdateProduct
-            },
-            {
-                path: 'all-orders',
-                element: <AdminRoute><AllOrder></AllOrder></AdminRoute>
-            },
-            {
-                path: 'all-products',
-                element: <AdminRoute><AllProduct></AllProduct></AdminRoute>
-            },
-            {
-                path: 'all-users',
-                element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
-            },
-            {
-                path: 'all-ads',
-                element: <AdminRoute><AllAds></AllAds></AdminRoute>
-            }
-        ]
-    },
-    {
-        path: '*',
-        Component: ErrorPage
-    }
-])
+  {
+    path: "/",
+    Component: RootLayout,
+    children: [
+      {
+        index: true,
+        Component: HomePage,
+      },
+      {
+        path: "forbidden",
+        Component: Forbidden,
+      },
+      {
+        path: "allproducts",
+        Component: AllProducts,
+      },
+      {
+        path: "discount-product",
+        Component: AllDiscountsPage,
+      },
+      {
+        path: "blogs",
+        Component: Blog,
+      },
+      {
+        path: "details/:id",
+        element: (
+          <PrivateRoute>
+            <ViewDetailsProduct></ViewDetailsProduct>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "Aboutus",
+        Component: About,
+      },
+      {
+        path: "Contactus",
+        Component: Contact,
+      },
+      {
+        path: "TermsandConditions",
+        Component: Terms,
+      },
+    ],
+  },
+  {
+    path: "/",
+    Component: AuthLayout,
+    children: [
+      {
+        path: "login",
+        Component: Login,
+      },
+      {
+        path: "register",
+        Component: Register,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        {" "}
+        <DashboardLayout></DashboardLayout>{" "}
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        index: true,
+        Component: Dashboard,
+      },
+      {
+        path: "myorder",
+        Component: MyOrderList,
+      },
+      {
+        path: "myprofile",
+        Component: MyProfile,
+      },
+      {
+        path: "payment/:productId",
+        Component: Payment,
+      },
+      {
+        path: "addproduct",
+        element: (
+          <VendorRoute>
+            <AddProduct></AddProduct>
+          </VendorRoute>
+        ),
+      },
+      {
+        path: "my-products",
+        element: (
+          <VendorRoute>
+            <MyAddedProduct></MyAddedProduct>
+          </VendorRoute>
+        ),
+      },
+      {
+        path: "postadvertisement",
+        element: (
+          <VendorRoute>
+            <AdvertisementForm></AdvertisementForm>
+          </VendorRoute>
+        ),
+      },
+      {
+        path: "my-ads",
+        element: (
+          <VendorRoute>
+            <MyAdvertisements></MyAdvertisements>
+          </VendorRoute>
+        ),
+      },
+      {
+        path: "watchlist",
+        Component: ManageWatchlist,
+      },
+      {
+        path: "price-trends",
+        Component: PriceTrends,
+      },
+      {
+        path: "update-product/:id",
+        Component: UpdateProduct,
+      },
+      {
+        path: "all-orders",
+        element: (
+          <AdminRoute>
+            <AllOrder></AllOrder>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "all-products",
+        element: (
+          <AdminRoute>
+            <AllProduct></AllProduct>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "all-users",
+        element: (
+          <AdminRoute>
+            <AllUsers></AllUsers>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "all-ads",
+        element: (
+          <AdminRoute>
+            <AllAds></AllAds>
+          </AdminRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "*",
+    Component: ErrorPage,
+  },
+]);

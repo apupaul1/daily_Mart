@@ -3,18 +3,8 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, ShoppingBasket } from "lucide-react";
 import useAxios from "../../../hooks/useAxios";
+import { ProductGridSkeleton } from "../../../Shared/Loading/Skeletons";
 import ProductCard from "./ProductCard";
-
-const ProductSkeleton = () => (
-  <div className="overflow-hidden rounded-[1.75rem] border border-base-300/60 bg-base-100">
-    <div className="aspect-[4/3] animate-pulse bg-base-200" />
-    <div className="space-y-3 p-5">
-      <div className="h-2.5 w-24 animate-pulse rounded-full bg-base-200" />
-      <div className="h-4 w-3/4 animate-pulse rounded-full bg-base-200" />
-      <div className="mt-5 h-2.5 w-20 animate-pulse rounded-full bg-base-200" />
-    </div>
-  </div>
-);
 
 const ProductSection = () => {
   const axios = useAxios();
@@ -56,11 +46,11 @@ const ProductSection = () => {
 
         {/* Grid */}
         {isLoading ? (
-          <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <ProductSkeleton key={index} />
-            ))}
-          </div>
+          <ProductGridSkeleton
+            count={4}
+            aspect="aspect-[4/3]"
+            className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
+          />
         ) : cards.length <= 0 ? (
           <div className="mt-10 flex flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-base-300 bg-base-200/40 px-6 py-16 text-center">
             <span className="grid size-12 place-items-center rounded-2xl bg-citron/40 text-primary">

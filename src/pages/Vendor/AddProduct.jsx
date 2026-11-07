@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
     ArrowUpRight,
+    Boxes,
     CalendarDays,
     Check,
     CircleDollarSign,
@@ -60,6 +61,7 @@ const getDefaultValues = (user) => ({
     status: "pending",
     imageUrl: "",
     pricePerUnit: "",
+    stock: "",
     prices: [{ date: toDateOnly(new Date()), price: "" }],
     itemDescription: "",
 });
@@ -187,6 +189,41 @@ const AddProduct = () => {
                                     placeholder="e.g. ৳30/kg"
                                     {...register("pricePerUnit")}
                                     className={fieldClass}
+                                />
+                            </FormField>
+
+                            <FormField
+                                label="Stock quantity"
+                                icon={Boxes}
+                                required
+                                htmlFor="stock"
+                                hint="Units available for purchase. Set to 0 to mark the item out of stock."
+                                error={errors.stock?.message}
+                            >
+                                <input
+                                    id="stock"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    placeholder="e.g. 25"
+                                    {...register("stock", {
+                                        required: "Stock quantity is required.",
+                                        setValueAs: (value) =>
+                                            value === "" ? "" : Number(value),
+                                        min: {
+                                            value: 0,
+                                            message:
+                                                "Stock cannot be negative.",
+                                        },
+                                        validate: (value) =>
+                                            value === "" ||
+                                            Number.isInteger(value) ||
+                                            "Stock must be a whole number.",
+                                    })}
+                                    className={withFieldError(
+                                        fieldClass,
+                                        errors.stock,
+                                    )}
                                 />
                             </FormField>
 

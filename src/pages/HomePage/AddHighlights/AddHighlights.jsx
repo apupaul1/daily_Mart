@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   AnimatePresence,
@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import useAxios from "../../../hooks/useAxios";
+import Loading from "../../../Shared/Loading/Loading";
 import fallbackImage from "../../../assets/background.jpg";
 
 const AddHighlights = () => {
@@ -86,7 +87,14 @@ const AddHighlights = () => {
         </div>
 
         {isLoading ? (
-          <div className="mt-8 aspect-[4/3] animate-pulse rounded-[1.5rem] border border-primary-content/10 bg-primary-content/[0.06] sm:mt-10 sm:aspect-[2/1] sm:rounded-[2rem] lg:aspect-[21/9]" />
+          <Loading
+            variant="section"
+            size="md"
+            tone="dark"
+            message="Loading highlights"
+            description="Fetching approved promotions."
+            className="mt-8 min-h-56 rounded-[1.5rem] border border-primary-content/10 bg-primary-content/[0.03] sm:mt-10 sm:min-h-64 sm:rounded-[2rem] lg:min-h-80"
+          />
         ) : isError ? (
           <div className="mt-8 grid min-h-56 place-items-center rounded-[1.5rem] border border-dashed border-primary-content/15 bg-primary-content/[0.03] px-6 py-14 text-center sm:mt-10 sm:rounded-[2rem]">
             <div>

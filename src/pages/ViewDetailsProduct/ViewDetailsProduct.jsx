@@ -405,6 +405,13 @@ const ViewDetailsProduct = () => {
       ? rawLatestPrice
       : (latestPoint?.price ?? null);
 
+  const hasStock =
+    product?.stock !== undefined &&
+    product?.stock !== null &&
+    product?.stock !== "";
+  const stock = Number(product?.stock);
+  const isOutOfStock = hasStock && stock <= 0;
+
   const selectedPoint =
     series.find((point) => point.key === selectedDateKey) ?? null;
 
@@ -703,6 +710,18 @@ const ViewDetailsProduct = () => {
 
               <DetailItem
                 icon={Box}
+                label="Stock available"
+                value={
+                  hasStock
+                    ? isOutOfStock
+                      ? "Out of stock"
+                      : `${stock} in stock`
+                    : "Not specified"
+                }
+              />
+
+              <DetailItem
+                icon={Box}
                 label="Last price update"
                 value={
                   latestPoint ? latestPoint.fullDate : formatDate(product.date)
@@ -714,14 +733,24 @@ const ViewDetailsProduct = () => {
               <button
                 type="button"
                 onClick={() => navigate(`/dashboard/payment/${product._id}`)}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-[13px] font-semibold text-primary-content transition-all duration-300 hover:-translate-y-0.5 hover:bg-forest-soft md:flex-1"
+                disabled={isOutOfStock}
+                title={isOutOfStock ? "This product is out of stock" : undefined}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-[13px] font-semibold text-primary-content transition-all duration-300 hover:-translate-y-0.5 hover:bg-forest-soft disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0 md:flex-1"
               >
-                <ShoppingCart
-                  className="size-4"
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-                Buy now
+                {isOutOfStock ? (
+                  <PackageX
+                    className="size-4"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <ShoppingCart
+                    className="size-4"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                )}
+                {isOutOfStock ? "Out of stock" : "Buy now"}
               </button>
 
               {role === "user" && (

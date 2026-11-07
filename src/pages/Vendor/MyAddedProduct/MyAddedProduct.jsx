@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
+import { data, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { PackagePlus, Pencil, Plus, Trash2 } from "lucide-react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Spinner } from "../../../Shared/Loading/Loading";
 import {
   DataTable,
   DataTableBody,
@@ -49,6 +51,7 @@ const MyAddedProduct = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const [deletingId, setDeletingId] = useState(null);
 
   const {
     data: products = [],
@@ -78,6 +81,8 @@ const MyAddedProduct = () => {
     });
 
     if (confirm.isConfirmed) {
+      setDeletingId(id);
+
       try {
         const res = await axiosSecure.delete(`/products/${id}`);
 
@@ -89,6 +94,8 @@ const MyAddedProduct = () => {
       } catch (error) {
         console.error(error);
         toast.error(error.message || "Failed to delete the product.");
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -113,7 +120,7 @@ const MyAddedProduct = () => {
       </TablePageHeader>
 
       {isLoading ? (
-        <TableSkeleton rows={5} columns={7} />
+        <TableSkeleton rows={5} columns={8} />
       ) : products.length === 0 ? (
         <TableEmpty
           icon={PackagePlus}
@@ -132,6 +139,7 @@ const MyAddedProduct = () => {
               <DataTableHeader>#</DataTableHeader>
               <DataTableHeader>Item</DataTableHeader>
               <DataTableHeader>Price / unit</DataTableHeader>
+              <DataTableHeader>Stock</DataTableHeader>
               <DataTableHeader>Market</DataTableHeader>
               <DataTableHeader>Added</DataTableHeader>
               <DataTableHeader>Status</DataTableHeader>
@@ -155,6 +163,22 @@ const MyAddedProduct = () => {
                     <span className="text-[15px] font-semibold text-primary">
                       {formatPrice(product.pricePerUnit)}
                     </span>
+                  </DataTableCell>
+
+                  <DataTableCell label="Stock">
+                    {product.stock === undefined ||
+                    product.stock === null ||
+                    product.stock === "" ? (
+                      <span className="text-[12px] text-ink-soft/60">—</span>
+                    ) : Number(product.stock) > 0 ? (
+                      <span className="inline-flex items-center rounded-full bg-primary/[0.07] px-2.5 py-1 text-[11px] font-bold text-primary">
+                        {product.stock} in stock
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-error/10 px-2.5 py-1 text-[11px] font-bold text-error">
+                        Out of stock
+                      </span>
+                    )}
                   </DataTableCell>
 
                   <DataTableCell label="Market">
@@ -187,11 +211,19 @@ const MyAddedProduct = () => {
                       </TableAction>
 
                       <TableAction
-                        icon={Trash2}
+                        icon={deletingId === product._id ? undefined : Trash2}
                         tone="danger"
+                        disabled={deletingId === product._id}
                         onClick={() => handleDelete(product._id)}
                       >
-                        Delete
+                        {deletingId === product._id ? (
+                          <>
+                            <Spinner size="xs" />
+                            Deleting…
+                          </>
+                        ) : (
+                          "Delete"
+                        )}
                       </TableAction>
                     </div>
                   </DataTableCell>

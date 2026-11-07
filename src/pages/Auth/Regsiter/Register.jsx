@@ -7,72 +7,72 @@ import SocialLogin from "../SocialLogin/SocialLogin";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import axios from "axios";
 import useAxios from "../../../hooks/useAxios";
+import { Spinner } from "../../../Shared/Loading/Loading";
 import { toast } from "sonner";
 
-const Register = () => {
+const Register = ({ from }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
+
   const { createUser, updateUserInfo } = useAuth();
   const axiosInstance = useAxios();
-  const location = useLocation();
   const navigate = useNavigate();
-  // Correctly access the 'from' state
-  const from = location.state?.from?.pathname || "/";
   const [profilePhoto, setProfilePhoto] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      await createUser(data.email, data.password);
 
-    createUser(data.email, data.password)
-      .then(async (result) => {
-        console.log(result.user);
-        navigate(from);
+      const userData = {
+        email: data.email,
+        name: data.name,
+        role: "user",
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
 
-        const userData = {
-          email: data.email,
-          name: data.name,
-          role: "user",
-          created_at: new Date().toISOString(),
-          last_login: new Date().toISOString(),
-        };
+      await axiosInstance.post("/users", userData);
 
-        const userRes = await axiosInstance.post("/users", userData);
-        console.log(userRes.data);
+      const userInfo = {
+        displayName: data.name,
+        photoURL: profilePhoto,
+      };
 
-        const userInfo = {
-          displayName: data.name,
-          photoURL: profilePhoto,
-        };
+      await updateUserInfo(userInfo);
 
-        updateUserInfo(userInfo)
-          .then(() => {
-            console.log("User info updated successfully");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        toast.success("Account creation successfull");
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error(error.message);
-      });
+      toast.success("Account creation successfull");
+      navigate(from);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
   };
 
   const handleImageupload = async (e) => {
-    const image = e.target.files[0];
-    console.log(image);
-    const formData = new FormData();
-    formData.append("image", image);
+    const image = e.target.files?.[0];
+    if (!image) return;
 
-    const imageUploadURL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
-    const res = await axios.post(imageUploadURL, formData);
+    setUploadingPhoto(true);
 
-    setProfilePhoto(res.data.data.url);
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+
+      const imageUploadURL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
+      const res = await axios.post(imageUploadURL, formData);
+
+      setProfilePhoto(res.data.data.url);
+      toast.success("Profile photo uploaded.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not upload the profile photo. Please try again.");
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   return (
@@ -114,9 +114,16 @@ const Register = () => {
                     onChange={handleImageupload}
                     type="file"
                     accept="image/*"
-                    className="file-input file-input-bordered w-full"
+                    disabled={uploadingPhoto}
+                    className="file-input file-input-bordered w-full disabled:opacity-60"
                     placeholder="Your profile picture"
                   />
+                  {uploadingPhoto && (
+                    <p className="mt-1.5 inline-flex items-center gap-2 text-sm text-gray-600">
+                      <Spinner size="xs" />
+                      Uploading photo…
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -173,14 +180,17 @@ const Register = () => {
                   )}
                 </div>
 
-                <div className="text-right">
-                  <a className="link link-hover text-sm text-black">
-                    Forgot password?
-                  </a>
-                </div>
-
-                <button type="submit" className="btn btn-neutral w-full">
-                  Register
+                <button
+                  type="submit"
+                  disabled={isSubmitting || uploadingPhoto}
+                  className="btn btn-neutral w-full"
+                >
+                  {(isSubmitting || uploadingPhoto) && <Spinner size="sm" />}
+                  {uploadingPhoto
+                    ? "Uploading photo…"
+                    : isSubmitting
+                      ? "Creating account…"
+                      : "Register"}
                 </button>
               </fieldset>
               <p className="mt-1 text-center text-black">

@@ -1,22 +1,28 @@
-import React from 'react';
-import useAuth from '../hooks/useAuth';
-import { Navigate, useLocation } from 'react-router';
-import Loading from '../Shared/Loading/Loading';
+import React from "react";
+import useAuth from "../hooks/useAuth";
+import { Navigate, useLocation } from "react-router";
+import Loading from "../Shared/Loading/Loading";
 
 const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
-    const { user, loading } = useAuth();
-    const location = useLocation();
+  if (loading) {
+    return (
+      <Loading
+        message="Checking your session"
+        description="Opening your DailyMart workspace."
+      />
+    );
+  }
 
-    if (loading) {
-        return <Loading></Loading>
-    }
+  if (!user) {
+    return (
+      <Navigate state={{ from: location.pathname }} to="/login"></Navigate>
+    );
+  }
 
-    if (!user) {
-        return <Navigate state={{ from: location.pathname }} to='/login'></Navigate>
-    }
-
-    return children
+  return children;
 };
 
 export default PrivateRoute;

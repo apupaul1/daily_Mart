@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { ArrowUpRight, Inbox, RotateCcw } from "lucide-react";
+import { Skeleton } from "../Loading/Skeletons";
 import { chartColors } from "./dashboardUtils";
 
 const statTones = {
@@ -214,22 +215,26 @@ export const DashboardSkeleton = () => (
         <span className="sr-only">Loading dashboard</span>
 
         <div className="space-y-2">
-            <div className="h-4 w-24 animate-pulse rounded-full bg-base-200" />
-            <div className="h-8 w-64 max-w-full animate-pulse rounded-full bg-base-200" />
+            <Skeleton rounded="rounded-full" className="h-4 w-24" />
+            <Skeleton rounded="rounded-full" className="h-8 w-64 max-w-full" />
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
             {Array.from({ length: 4 }).map((_, index) => (
-                <div
+                <Skeleton
                     key={index}
-                    className="h-32 animate-pulse rounded-[1.5rem] bg-base-200"
+                    rounded="rounded-[1.5rem]"
+                    className="h-32"
                 />
             ))}
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
-            <div className="h-72 animate-pulse rounded-[1.5rem] bg-base-200 lg:col-span-2" />
-            <div className="h-72 animate-pulse rounded-[1.5rem] bg-base-200" />
+            <Skeleton
+                rounded="rounded-[1.5rem]"
+                className="h-72 lg:col-span-2"
+            />
+            <Skeleton rounded="rounded-[1.5rem]" className="h-72" />
         </div>
     </div>
 );

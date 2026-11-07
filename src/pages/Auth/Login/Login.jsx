@@ -3,28 +3,28 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import useAuth from "../../../hooks/useAuth";
+import { Spinner } from "../../../Shared/Loading/Loading";
 import { toast } from "sonner";
 
 const Login = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
   const { signIn } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const from = location.state?.from || "/";
 
-  const onSubmit = (data) => {
-    signIn(data.email, data.password)
-      .then((result) => {
-        navigate(from);
-        toast.success("Login Successfull")
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+  const onSubmit = async (data) => {
+    try {
+      await signIn(data.email, data.password);
+      navigate(from);
+      toast.success("Login Successfull");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -75,20 +75,25 @@ const Login = () => {
               </a>
             </div>
 
-            <button type="submit" className="btn btn-neutral w-full">
-              Login
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn btn-neutral w-full"
+            >
+              {isSubmitting && <Spinner size="sm" />}
+              {isSubmitting ? "Signing in…" : "Login"}
             </button>
           </fieldset>
           <p>
             <small>
               Don't have an account?{" "}
-              <Link className="btn-link" to={"/register"}>
+              <Link className="btn-link" to={"/register"} from={from}>
                 Register
               </Link>
             </small>
           </p>
         </form>
-        <SocialLogin></SocialLogin>
+        <SocialLogin from={from}></SocialLogin>
       </div>
     </div>
   );

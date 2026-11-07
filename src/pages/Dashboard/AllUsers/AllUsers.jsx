@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { Search, ShieldCheck, Store, Users } from "lucide-react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import DashboardAvatar from "../../../Shared/DashboardComponent/DashboardAvatar";
+import { Spinner } from "../../../Shared/Loading/Loading";
 import {
     DataTable,
     DataTableBody,
@@ -24,12 +30,13 @@ const AllUsers = () => {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
 
-    const { data: users = [], isLoading } = useQuery({
+    const { data: users = [], isLoading, isFetching } = useQuery({
         queryKey: ["all-users", search],
         queryFn: async () => {
             const res = await axiosSecure.get(`/users?search=${search}`);
             return res.data;
         },
+        placeholderData: keepPreviousData,
     });
 
     const mutation = useMutation({
@@ -90,9 +97,11 @@ const AllUsers = () => {
                 <p className="text-[12px] text-ink-soft">
                     {isLoading
                         ? "Loading accounts…"
-                        : `Showing ${users.length} account${
-                              users.length === 1 ? "" : "s"
-                          }`}
+                        : isFetching
+                          ? "Searching accounts…"
+                          : `Showing ${users.length} account${
+                                users.length === 1 ? "" : "s"
+                            }`}
                 </p>
             </div>
 
@@ -174,7 +183,11 @@ const AllUsers = () => {
                                         <div className="flex flex-wrap gap-2 md:justify-end">
                                             {user.role !== "admin" && (
                                                 <TableAction
-                                                    icon={ShieldCheck}
+                                                    icon={
+                                                        isRowUpdating(user._id)
+                                                            ? undefined
+                                                            : ShieldCheck
+                                                    }
                                                     tone="primary"
                                                     onClick={() =>
                                                         handleRoleChange(
@@ -186,13 +199,24 @@ const AllUsers = () => {
                                                         user._id,
                                                     )}
                                                 >
-                                                    Make admin
+                                                    {isRowUpdating(user._id) ? (
+                                                        <>
+                                                            <Spinner size="xs" />
+                                                            Updating…
+                                                        </>
+                                                    ) : (
+                                                        "Make admin"
+                                                    )}
                                                 </TableAction>
                                             )}
 
                                             {user.role !== "vendor" && (
                                                 <TableAction
-                                                    icon={Store}
+                                                    icon={
+                                                        isRowUpdating(user._id)
+                                                            ? undefined
+                                                            : Store
+                                                    }
                                                     tone="warning"
                                                     onClick={() =>
                                                         handleRoleChange(
@@ -204,7 +228,14 @@ const AllUsers = () => {
                                                         user._id,
                                                     )}
                                                 >
-                                                    Make vendor
+                                                    {isRowUpdating(user._id) ? (
+                                                        <>
+                                                            <Spinner size="xs" />
+                                                            Updating…
+                                                        </>
+                                                    ) : (
+                                                        "Make vendor"
+                                                    )}
                                                 </TableAction>
                                             )}
                                         </div>

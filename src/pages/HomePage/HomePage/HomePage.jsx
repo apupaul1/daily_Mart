@@ -4,7 +4,6 @@ import FAQSection from "../FAQSection/FAQSection";
 import OurServices from "../OurServices/OurServices";
 import ProductSection from "../Product/ProductSection";
 import AddHighlights from "../AddHighlights/AddHighlights";
-import Loading from "../../../Shared/Loading/Loading";
 import NewsLetter from "../NewsLetter/NewsLetter";
 import PopularSales from "../PopularSales/PopularSales";
 import MarketMarquee from "../MarketMarquee/MarketMarquee";

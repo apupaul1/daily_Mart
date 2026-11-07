@@ -1,16 +1,16 @@
-import React from 'react';
-import Navbar from '../Shared/Navbar/Navbar';
-import { Outlet } from 'react-router';
-import Footer from '../Shared/Footer/Footer';
+import React from "react";
+import Navbar from "../Shared/Navbar/Navbar";
+import { Outlet } from "react-router";
+import Footer from "../Shared/Footer/Footer";
 
 const RootLayout = () => {
-    return (
-        <div className='bg-base-100'>
-            <Navbar></Navbar>
-            <Outlet></Outlet>
-            <Footer></Footer>
-        </div>
-    );
+  return (
+    <div className="bg-base-100">
+      <Navbar></Navbar>
+      <Outlet></Outlet>
+      <Footer></Footer>
+    </div>
+  );
 };
 
 export default RootLayout;

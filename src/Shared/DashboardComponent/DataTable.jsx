@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { ChevronLeft, ChevronRight, Inbox, Sparkles } from "lucide-react";
+import { Skeleton } from "../Loading/Skeletons";
 
 const shellClass =
   "overflow-hidden rounded-[1.5rem] border border-base-300/70 bg-base-100 shadow-[0_1px_2px_rgba(18,35,28,0.04)]";
@@ -282,10 +283,11 @@ export const TableSkeleton = ({ rows = 5, columns = 4 }) => (
           className="mb-3 rounded-2xl border border-base-300/60 p-4 last:mb-0 md:mb-0 md:flex md:items-center md:gap-4 md:rounded-none md:border-0 md:border-b md:border-base-300/50 md:px-5 md:py-4"
         >
           {Array.from({ length: columns }).map((__, columnIndex) => (
-            <span
+            <Skeleton
               key={columnIndex}
+              rounded="rounded-full"
               className={[
-                "mb-2 block h-3 animate-pulse rounded-full bg-base-200 md:mb-0",
+                "mb-2 h-3 md:mb-0",
                 columnIndex === 0 ? "w-2/3 md:w-1/4" : "w-1/2 md:flex-1",
                 columnIndex === columns - 1 ? "last:mb-0" : "",
               ].join(" ")}

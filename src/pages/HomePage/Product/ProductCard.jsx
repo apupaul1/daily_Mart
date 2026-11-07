@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
 import { motion as Motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, CalendarDays, ImageOff, MapPin } from "lucide-react";
+import { ArrowUpRight, Boxes, CalendarDays, ImageOff, MapPin } from "lucide-react";
 import useAuth from "../../../hooks/useAuth";
 
 const formatPrice = (value) => {
@@ -31,6 +31,10 @@ const ProductCard = ({ card, index = 0 }) => {
   const priceAmount = rawPriceAmount.trim();
   const priceUnit = priceUnitParts.join("/").trim();
   const detailsPath = user?.email ? `/details/${card._id}` : "/login";
+  const hasStock =
+    card?.stock !== undefined && card?.stock !== null && card?.stock !== "";
+  const stock = Number(card?.stock);
+  const isOutOfStock = hasStock && stock <= 0;
 
   return (
     <Motion.div
@@ -76,6 +80,20 @@ const ProductCard = ({ card, index = 0 }) => {
               </span>
             )}
           </span>
+
+          {hasStock && (
+            <span
+              className={[
+                "absolute bottom-4 left-4 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] shadow-sm backdrop-blur-md",
+                isOutOfStock
+                  ? "border-error/25 bg-error/10 text-error"
+                  : "border-primary/20 bg-base-100/90 text-primary",
+              ].join(" ")}
+            >
+              <Boxes className="size-3" strokeWidth={2.2} aria-hidden="true" />
+              {isOutOfStock ? "Out of stock" : `${stock} in stock`}
+            </span>
+          )}
         </div>
 
         {/* Content */}

@@ -4,7 +4,7 @@ import AdminDashboard from './AdminDashboard';
 import VendorDashboard from './VendorDashboard';
 import UserDashboard from './UserDashboard';
 import Forbidden from '../../Forbidden/Forbidden';
-import Loading from '../../../Shared/Loading/Loading';
+import { DashboardSkeleton } from '../../../Shared/DashboardComponent/DashboardUI';
 
 const Dashboard = () => {
 
@@ -12,7 +12,7 @@ const Dashboard = () => {
 
 
     if (roleLoading) {
-        return <Loading></Loading>
+        return <DashboardSkeleton />
     }
 
     if (role === 'admin') {

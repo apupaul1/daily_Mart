@@ -9,7 +9,12 @@ const VendorRoute = ({ children }) => {
     const { role, roleLoading } = UseUserRole();
 
     if (loading || roleLoading) {
-        return <Loading></Loading>
+        return (
+            <Loading
+                message="Verifying vendor access"
+                description="Confirming your permissions for this area."
+            />
+        )
     }
 
     if (!user || role !== 'vendor') {
